@@ -101,7 +101,9 @@ step2_monte_carlo <- function(config, paths, con, res1, engine = NULL) {
   
   message(sprintf("Lancement de %d simulations Monte-Carlo (parallèle)...\n", nsim))
   
-  n_workers <- max(1L, parallel::detectCores() - 1L)
+  n_workers <- n_workers_for(config)
+  message("Workers : ", n_workers)
+  set_seed_if_any(config, mc_cfg)
   old_plan  <- future::plan()
   plan(multisession, workers = n_workers)
   on.exit(future::plan(old_plan), add = TRUE)
