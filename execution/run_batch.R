@@ -30,8 +30,9 @@ helper_files <- sort(list.files(helper_dir, pattern = "\\.R$", full.names = TRUE
 invisible(lapply(helper_files, source, chdir = TRUE))
 
 # ---- Vérifier librairies ------------------------------------------------
-pkgs <- c("sf", "DBI", "RPostgres", "readODS", "dplyr", "tidyr",
-          "tibble", "ggplot2")
+# Packages requis quel que soit le mode. DBI et RPostgres ne sont requis
+# qu'en mode postgis (vérifiés après lecture de la configuration).
+pkgs <- c("sf", "readODS", "dplyr", "tidyr", "tibble", "ggplot2")
 for (p in pkgs) {
   if (!requireNamespace(p, quietly = TRUE)) stop("Package manquant: ", p)
 }
@@ -47,6 +48,14 @@ yaml_path <- if (length(args) >= 1 && nzchar(args[1])) {
 config <- load_config(yaml_path)
 validate_config(config)
 paths  <- io_paths(config)
+
+if (identical(tolower(trimws(config$db$data_source %||% "postgis")), "postgis")) {
+  for (p in c("DBI", "RPostgres")) {
+    if (!requireNamespace(p, quietly = TRUE)) {
+      stop("Package manquant: ", p, " (requis en mode db.data_source = postgis)")
+    }
+  }
+}
 
 # ---- Connexion DB -------------------------------------------------------
 con <- get_db_conn(config, config$db$choice)
