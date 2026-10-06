@@ -66,6 +66,26 @@ on.exit(db_disconnect_safe(con), add = TRUE)
 # STEP 0 - Checkup
 res0 <- step0_checkup(config, paths, con = con)
 
+# Arrêt immédiat si des chemins ou des données d'entrée posent problème :
+# tous les problèmes sont listés en une fois, au lieu d'une erreur obscure en étape 1.
+report_step0_problems <- function(problemes) {
+  bloquants <- c(problemes$chemins_acces, problemes$donnees_geographiques)
+  avertissements <- problemes$schemas_tables_champs
+  if (length(avertissements) > 0) {
+    warning("[STEP0] ", paste(names(avertissements), unlist(avertissements), sep = " : ", collapse = "\n"),
+            call. = FALSE)
+  }
+  if (length(bloquants) > 0) {
+    # Liste complète via message() : R tronque les messages d'erreur (~1000 caractères)
+    message("[STEP0] ", length(bloquants), " problème(s) bloquant(s) :\n",
+            paste0("  - ", names(bloquants), " : ", unlist(bloquants), collapse = "\n"))
+    stop("[STEP0] ", length(bloquants), " problème(s) bloquant(s) sur les données d'entrée (détail ci-dessus).",
+         call. = FALSE)
+  }
+  invisible(TRUE)
+}
+report_step0_problems(res0$problemes)
+
 # STEP 1 - Analyse simple avec modèle de référence
 res1 <- step1_analyse_simple(config, paths, con = con, data = res0$list_sauv)
 
