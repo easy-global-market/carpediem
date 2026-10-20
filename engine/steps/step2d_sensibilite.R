@@ -197,6 +197,8 @@ step2d_sensibilite <- function(config, paths, res1, res2b, engine = NULL) {
   old_plan  <- future::plan()
   plan(multisession, workers = n_workers)
   on.exit(future::plan(old_plan), add = TRUE)
+  old_opt   <- set_globals_max_size(config)
+  on.exit(options(old_opt), add = TRUE)
   
   handlers(global = TRUE)
   handlers("txtprogressbar")

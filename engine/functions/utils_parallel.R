@@ -35,3 +35,20 @@ set_seed_if_any <- function(config, section_cfg = NULL) {
   }
   invisible(seed)
 }
+
+# Taille maximale des objets envoyés aux workers (option future.globals.maxSize).
+# Par défaut, future refuse au-delà de 500 Mo ; sur une grande zone d'étude
+# (Mer du Nord : environ 670 Mo pour le Monte Carlo), la limite est dépassée.
+# Priorité : config$execution$globals_max_mb, puis variable d'environnement
+# CARPEDIEM_GLOBALS_MAX_MB, sinon pas de limite (la mémoire disponible du
+# conteneur reste la vraie contrainte : chaque worker reçoit une copie).
+# Renvoie l'ancienne valeur, pour la restaurer avec options().
+set_globals_max_size <- function(config = NULL) {
+  mb <- suppressWarnings(as.numeric(config$execution$globals_max_mb))
+  if (length(mb) != 1 || is.na(mb)) mb <- suppressWarnings(as.numeric(Sys.getenv("CARPEDIEM_GLOBALS_MAX_MB", "")))
+  limit <- if (length(mb) == 1 && !is.na(mb) && mb > 0) mb * 1024^2 else Inf
+  old <- options(future.globals.maxSize = limit)
+  message("Taille max. des objets envoyés aux workers : ",
+          if (is.finite(limit)) paste(mb, "Mo") else "sans limite")
+  invisible(old)
+}

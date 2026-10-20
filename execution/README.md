@@ -383,10 +383,13 @@ Les étapes Monte Carlo (step2) et sensibilité formelle (step2d) sont parallél
 - Nombre de workers : clé `execution.workers` si elle est renseignée, sinon variable d'environnement `CARPEDIEM_WORKERS`, sinon nombre de cœurs disponibles moins un (`parallelly::availableCores()`, qui respecte les limites CPU d'un conteneur).
 - Reproductibilité : une graine peut être fixée par `analyses.monte_carlo.seed`, `analyses.sensibilite_formelle.seed` ou `execution.seed`. Les tirages sont alors identiques d'un run à l'autre, quel que soit le nombre de workers.
 
+- Taille des objets envoyés aux workers : sur une grande zone d'étude, les données transmises à chaque worker peuvent dépasser la limite par défaut du paquet `future` (500 Mo). Le pipeline lève cette limite ; on peut en fixer une avec la clé `execution.globals_max_mb` ou la variable d'environnement `CARPEDIEM_GLOBALS_MAX_MB` (en Mo). Chaque worker reçoit une copie de ces données : prévoir la mémoire en conséquence.
+
 ```yaml
 execution:
   workers: 4
   seed: 42
+  globals_max_mb: 2048   # optionnel
 ```
 
 ### Résultats Monte Carlo
