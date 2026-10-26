@@ -44,6 +44,7 @@ Le guide d'utilisation de la version 1 reste une référence pour la méthode : 
 ## Utilisation sur EDITO
 Carpediem est disponible sur [EDITO](https://dive.edito.eu/) (European Digital Twin of the Ocean), dans le catalogue officiel des processus du Datalab, catégorie « Metrics and indicators ». L'étude Mer du Nord est proposée comme jeu de données par défaut. <br/>
 Les fichiers d'intégration (image Docker, chart Helm, procédure de déploiement, organisation des résultats) sont dans le dossier [`edito-docker/`](edito-docker/). <br/>
+Exploitation au quotidien (lancer un run, ajouter une étude, gérer les runs, mettre à jour le processus et l'application web) : [`edito-docker/HANDBOOK.md`](edito-docker/HANDBOOK.md). <br/>
 
 Les résultats produits sur EDITO sont à créditer avec la mention : « Généré à l'aide du service EDITO de l'Union européenne » (« Generated using EDITO of the European Union »). <br/>
 
